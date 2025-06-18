@@ -17,22 +17,7 @@ const commonFeatureRouter = require("./routes/common/feature-routes");
 
 //create a database connection -> u can also
 // Configuration de la connexion MongoDB
-const uri = "mongodb+srv://mangane975:Bayemor_1994@expressapi.v6wzr.mongodb.net/EcommerceDB?retryWrites=true&w=majority&appName=ExpressApi";
-const mongooseOptions = {
-  ssl: true,
-  tlsAllowInvalidCertificates: false
-};
 
-// Connexion à MongoDB
-mongoose.connect(uri, mongooseOptions)
-  .then(() => {
-    console.log("✅ Connecté à MongoDB Atlas avec succès !");
-    console.log(`📁 Base de données: ${mongoose.connection.db.databaseName}`);
-  })
-  .catch(err => {
-    console.error("❌ Échec de la connexion MongoDB :", err.message);
-    process.exit(1);
-  });
 //create a separate file for this and then import/use that file here
 
 //mongoose
