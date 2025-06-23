@@ -124,6 +124,43 @@ function ShoppingCheckout() {
                 : "Checkout with Paypal"}
             </Button>
           </div>
+          {/* New Orange Money Button */}
+          <div className="mt-4 w-full">
+            <Button
+              className="w-full bg-[#FF7F00] hover:bg-[#FF7F00]/90 text-white"
+              onClick={() => {
+                // Placeholder for Orange Money action
+                console.log("Orange Money payment initiated");
+                toast({
+                  title: "Orange Money: Not yet implemented.",
+                  description: "This payment method will be available soon.",
+                  variant: "info",
+                });
+              }}
+            >
+              {/* Placeholder for Orange Money Logo */}
+              <span>Pay with Orange Money</span>
+            </Button>
+          </div>
+
+          {/* New Wave Button */}
+          <div className="mt-4 w-full">
+            <Button
+              className="w-full bg-[#00A8E1] hover:bg-[#00A8E1]/90 text-white"
+              onClick={() => {
+                // Placeholder for Wave action
+                console.log("Wave payment initiated");
+                toast({
+                  title: "Wave: Not yet implemented.",
+                  description: "This payment method will be available soon.",
+                  variant: "info",
+                });
+              }}
+            >
+              {/* Placeholder for Wave Logo */}
+              <span>Pay with Wave</span>
+            </Button>
+          </div>
         </div>
       </div>
     </div>
