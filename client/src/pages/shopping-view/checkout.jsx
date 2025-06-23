@@ -134,7 +134,7 @@ function ShoppingCheckout() {
                 toast({
                   title: "Orange Money: Not yet implemented.",
                   description: "This payment method will be available soon.",
-                  variant: "info",
+                  variant: "orange",
                 });
               }}
             >
@@ -153,7 +153,7 @@ function ShoppingCheckout() {
                 toast({
                   title: "Wave: Not yet implemented.",
                   description: "This payment method will be available soon.",
-                  variant: "info",
+                  variant: "wave_blue",
                 });
               }}
             >
