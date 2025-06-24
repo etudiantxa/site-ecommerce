@@ -14,6 +14,7 @@ import { useToast } from "../ui/use-toast";
 const initialFormData = {
   status: "",
 };
+
 const getStatusBadgeStyle = (status) => {
   switch (status?.toLowerCase()) {
     case "confirmed":
@@ -33,13 +34,12 @@ const getStatusBadgeStyle = (status) => {
       return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100";
   }
 };
+
 function AdminOrderDetailsView({ orderDetails }) {
   const [formData, setFormData] = useState(initialFormData);
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const { toast } = useToast();
-
-  console.log(orderDetails, "orderDetailsorderDetails");
 
   function handleUpdateStatus(event) {
     event.preventDefault();
@@ -105,7 +105,7 @@ function AdminOrderDetailsView({ orderDetails }) {
               <Badge className={`py-1 px-2.5 text-xs font-medium rounded-md self-start ${getStatusBadgeStyle(orderDetails?.orderStatus)}`}>
                 {orderDetails?.orderStatus}
               </Badge>
-            </Label>
+            </div>
           </div>
         </section>
 
@@ -168,7 +168,7 @@ function AdminOrderDetailsView({ orderDetails }) {
                 name: "status",
                 componentType: "select",
                 options: [
-                  { id: "", label: "Sélectionner un statut..." },
+                  // { id: "", label: "Sélectionner un statut..." }, // This line caused the error
                   { id: "pending", label: "En attente" },
                   { id: "confirmed", label: "Confirmée"},
                   { id: "inProcess", label: "En traitement" },
@@ -176,7 +176,7 @@ function AdminOrderDetailsView({ orderDetails }) {
                   { id: "delivered", label: "Livrée" },
                   { id: "rejected", label: "Rejetée" },
                 ],
-                placeholder: "Sélectionner un statut",
+                placeholder: "Sélectionner un statut...", // Placeholder text is managed by the Select component itself
               },
             ]}
             formData={formData}
