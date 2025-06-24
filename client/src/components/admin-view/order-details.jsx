@@ -14,7 +14,6 @@ import { useToast } from "../ui/use-toast";
 const initialFormData = {
   status: "",
 };
-
 const getStatusBadgeStyle = (status) => {
   switch (status?.toLowerCase()) {
     case "confirmed":
@@ -34,12 +33,13 @@ const getStatusBadgeStyle = (status) => {
       return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100";
   }
 };
-
 function AdminOrderDetailsView({ orderDetails }) {
   const [formData, setFormData] = useState(initialFormData);
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const { toast } = useToast();
+
+  console.log(orderDetails, "orderDetailsorderDetails");
 
   function handleUpdateStatus(event) {
     event.preventDefault();
@@ -105,7 +105,7 @@ function AdminOrderDetailsView({ orderDetails }) {
               <Badge className={`py-1 px-2.5 text-xs font-medium rounded-md self-start ${getStatusBadgeStyle(orderDetails?.orderStatus)}`}>
                 {orderDetails?.orderStatus}
               </Badge>
-            </div>
+            </Label>
           </div>
         </section>
 
