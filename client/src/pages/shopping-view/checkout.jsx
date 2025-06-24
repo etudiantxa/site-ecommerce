@@ -14,6 +14,7 @@ function ShoppingCheckout() {
   const { approvalURL } = useSelector((state) => state.shopOrder);
   const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null);
   const [isPaymentStart, setIsPaymemntStart] = useState(false);
+  const [isPayTechPaymentProcessing, setIsPayTechPaymentProcessing] = useState(false);
   const dispatch = useDispatch();
   const { toast } = useToast();
 
@@ -91,6 +92,97 @@ function ShoppingCheckout() {
     });
   }
 
+  async function handlePayTechPayment(paymentMethod) {
+    if (!cartItems || cartItems.items.length === 0) {
+      toast({
+        title: "Votre panier est vide.",
+        description: "Veuillez ajouter des articles pour continuer.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (currentSelectedAddress === null) {
+      toast({
+        title: "Aucune adresse sélectionnée.",
+        description: "Veuillez sélectionner une adresse de livraison.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Ensure user data is available, especially phone, first name, and last name
+    // For first_name and last_name, we might need to split user.name or use address details if available
+    // For phone_number, prioritize address phone, then user phone
+    const phoneNumber = currentSelectedAddress?.phone || user?.phone;
+    if (!phoneNumber) {
+        toast({
+            title: "Numéro de téléphone manquant.",
+            description: "Veuillez fournir un numéro de téléphone dans votre profil ou adresse de livraison.",
+            variant: "destructive",
+        });
+        return;
+    }
+
+    // Attempt to get first and last names. This is a common simplification.
+    // You might have more specific fields like user.firstName, user.lastName
+    const nameParts = user?.name?.split(" ") || [];
+    const firstName = user?.firstName || nameParts[0] || currentSelectedAddress?.name?.split(" ")[0] || "Client";
+    const lastName = user?.lastName || nameParts.slice(1).join(" ") || currentSelectedAddress?.name?.split(" ").slice(1).join(" ") || "PayTech";
+
+
+    const userPayload = {
+      id: user?.id,
+      email: user?.email,
+      phone_number: phoneNumber,
+      first_name: firstName,
+      last_name: lastName,
+    };
+
+    const productPayload = {
+      name: `Commande ${cartItems?._id || "N/A"}`,
+      price: totalCartAmount,
+      description: `Achat de ${cartItems.items.length} article(s) sur E-commerce`,
+      payment_method: paymentMethod, // "Orange Money" or "Wave"
+      internalRef: cartItems?._id || `TEMP_REF_${Date.now()}`,
+    };
+
+    setIsPayTechPaymentProcessing(true);
+
+    try {
+      const response = await fetch("/api/payment/initiate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user: userPayload, product: productPayload }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success && data.paymentUrl) {
+        // Potentially create order in your DB here if needed before redirect,
+        // or handle it via IPN after PayTech confirmation.
+        // For now, directly redirecting as per PayTech flow.
+        window.location.href = data.paymentUrl;
+      } else {
+        toast({
+          title: "Échec de l'initiation du paiement",
+          description: data.message || data.error || "Une erreur est survenue.",
+          variant: "destructive",
+        });
+        setIsPayTechPaymentProcessing(false);
+      }
+    } catch (error) {
+      console.error("PayTech payment initiation error:", error);
+      toast({
+        title: "Erreur de communication",
+        description: "Impossible de contacter le service de paiement. Veuillez réessayer.",
+        variant: "destructive",
+      });
+      setIsPayTechPaymentProcessing(false);
+    }
+  }
+
   if (approvalURL) {
     window.location.href = approvalURL;
   }
@@ -128,18 +220,11 @@ function ShoppingCheckout() {
           <div className="mt-4 w-full">
             <Button
               className="w-full bg-[#FF7F00] hover:bg-[#FF7F00]/90 text-white"
-              onClick={() => {
-                // Placeholder for Orange Money action
-                console.log("Orange Money payment initiated");
-                toast({
-                  title: "Orange Money: Not yet implemented.",
-                  description: "This payment method will be available soon.",
-                  variant: "orange",
-                });
-              }}
+              onClick={() => handlePayTechPayment("Orange Money")}
+              disabled={isPayTechPaymentProcessing || isPaymentStart}
             >
               {/* Placeholder for Orange Money Logo */}
-              <span>Pay with Orange Money</span>
+              {isPayTechPaymentProcessing ? "Traitement..." : "Pay with Orange Money"}
             </Button>
           </div>
 
@@ -147,18 +232,11 @@ function ShoppingCheckout() {
           <div className="mt-4 w-full">
             <Button
               className="w-full bg-[#00A8E1] hover:bg-[#00A8E1]/90 text-white"
-              onClick={() => {
-                // Placeholder for Wave action
-                console.log("Wave payment initiated");
-                toast({
-                  title: "Wave: Not yet implemented.",
-                  description: "This payment method will be available soon.",
-                  variant: "wave_blue",
-                });
-              }}
+              onClick={() => handlePayTechPayment("Wave")}
+              disabled={isPayTechPaymentProcessing || isPaymentStart}
             >
               {/* Placeholder for Wave Logo */}
-              <span>Pay with Wave</span>
+              {isPayTechPaymentProcessing ? "Traitement..." : "Pay with Wave"}
             </Button>
           </div>
         </div>
