@@ -43,29 +43,34 @@ function AdminOrderDetailsView({ orderDetails }) {
   }
 
   return (
-    <DialogContent className="sm:max-w-[600px]">
+    <DialogContent className="sm:max-w-[600px]  max-h-[90vh] overflow-auto bg-white rounded-lg shadow-lg p-6">
       <div className="grid gap-6">
         <div className="grid gap-2">
           <div className="flex mt-6 items-center justify-between">
             <p className="font-medium">Order ID</p>
             <Label>{orderDetails?._id}</Label>
           </div>
+          <Separator />
           <div className="flex mt-2 items-center justify-between">
             <p className="font-medium">Order Date</p>
             <Label>{orderDetails?.orderDate.split("T")[0]}</Label>
           </div>
+          <Separator />
           <div className="flex mt-2 items-center justify-between">
             <p className="font-medium">Order Price</p>
             <Label>${orderDetails?.totalAmount}</Label>
           </div>
+          <Separator />
           <div className="flex mt-2 items-center justify-between">
             <p className="font-medium">Payment method</p>
             <Label>{orderDetails?.paymentMethod}</Label>
           </div>
+          <Separator />
           <div className="flex mt-2 items-center justify-between">
             <p className="font-medium">Payment Status</p>
             <Label>{orderDetails?.paymentStatus}</Label>
           </div>
+          <Separator />
           <div className="flex mt-2 items-center justify-between">
             <p className="font-medium">Order Status</p>
             <Label>
@@ -86,12 +91,12 @@ function AdminOrderDetailsView({ orderDetails }) {
         <Separator />
         <div className="grid gap-4">
           <div className="grid gap-2">
-            <div className="font-medium">Order Details</div>
+            <div className="text-lg font-semibold mb-2">Order Details</div>
             <ul className="grid gap-3">
               {orderDetails?.cartItems && orderDetails?.cartItems.length > 0
                 ? orderDetails?.cartItems.map((item) => (
-                    <li className="flex items-center justify-between">
-                      <span>Title: {item.title}</span>
+                    <li className="flex items-center justify-between bg-gray-100 rounded px-3 py-2">
+                      <span className="font-medium">Title: {item.title}</span>
                       <span>Quantity: {item.quantity}</span>
                       <span>Price: ${item.price}</span>
                     </li>
@@ -114,7 +119,7 @@ function AdminOrderDetailsView({ orderDetails }) {
           </div>
         </div>
 
-        <div>
+        <div className="mt-4">
           <CommonForm
             formControls={[
               {

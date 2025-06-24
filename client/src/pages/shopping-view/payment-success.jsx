@@ -54,7 +54,7 @@ function PaymentSuccessPage() {
           <Button
             variant="link"
             className="mt-4 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500 font-medium"
-            onClick={() => navigate("/shop")} // Or your shop homepage
+            onClick={() => navigate("/shop/home")} // Or your shop homepage
           >
             Continuer mes achats
           </Button>
