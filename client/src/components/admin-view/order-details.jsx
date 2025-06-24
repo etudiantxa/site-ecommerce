@@ -66,44 +66,39 @@ function AdminOrderDetailsView({ orderDetails }) {
   }
 
   return (
-    <DialogContent className="sm:max-w-[600px]">
-      <div className="grid gap-6">
-        <div className="grid gap-2">
-          <div className="flex mt-6 items-center justify-between">
-            <p className="font-medium">Order ID</p>
-            <Label>{orderDetails?._id}</Label>
-          </div>
-          <div className="flex mt-2 items-center justify-between">
-            <p className="font-medium">Order Date</p>
-            <Label>{orderDetails?.orderDate.split("T")[0]}</Label>
-          </div>
-          <div className="flex mt-2 items-center justify-between">
-            <p className="font-medium">Order Price</p>
-            <Label>${orderDetails?.totalAmount}</Label>
-          </div>
-          <div className="flex mt-2 items-center justify-between">
-            <p className="font-medium">Payment method</p>
-            <Label>{orderDetails?.paymentMethod}</Label>
-          </div>
-          <div className="flex mt-2 items-center justify-between">
-            <p className="font-medium">Payment Status</p>
-            <Label>{orderDetails?.paymentStatus}</Label>
-          </div>
-          <div className="flex mt-2 items-center justify-between">
-            <p className="font-medium">Order Status</p>
-            <Label>
-              <Badge
-                className={`py-1 px-3 ${
-                  orderDetails?.orderStatus === "confirmed"
-                    ? "bg-green-500"
-                    : orderDetails?.orderStatus === "rejected"
-                    ? "bg-red-600"
-                    : "bg-black"
-                }`}
-              >
+    <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 rounded-lg shadow-xl p-0">
+      <DialogHeader className="px-6 py-4 border-b dark:border-gray-700">
+        <DialogTitle className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+          Commande #{orderDetails?._id}
+        </DialogTitle>
+        <DialogDescription className="text-sm text-gray-500 dark:text-gray-400">
+          Passée le {new Date(orderDetails?.orderDate).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' })}
+        </DialogDescription>
+      </DialogHeader>
+
+      <div className="p-6 space-y-6">
+        {/* Section Résumé de la Commande */}
+        <section>
+          <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">Résumé de la commande</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+            <div>
+              <span className="font-medium text-gray-500 dark:text-gray-400">Montant Total : </span>
+              <span className="text-gray-800 dark:text-gray-200 font-semibold">${orderDetails?.totalAmount?.toFixed(2)}</span>
+            </div>
+            <div>
+              <span className="font-medium text-gray-500 dark:text-gray-400">Méthode de Paiement : </span>
+              <span className="text-gray-800 dark:text-gray-200">{orderDetails?.paymentMethod}</span>
+            </div>
+            <div>
+              <span className="font-medium text-gray-500 dark:text-gray-400">Statut Paiement : </span>
+              <span className="text-gray-800 dark:text-gray-200">{orderDetails?.paymentStatus}</span>
+            </div>
+            <div className="flex items-center">
+              <span className="font-medium text-gray-500 dark:text-gray-400 mr-2">Statut Commande : </span>
+              <Badge className={`py-1 px-3 text-xs font-medium rounded-full ${getStatusBadgeStyle(orderDetails?.orderStatus)}`}>
                 {orderDetails?.orderStatus}
               </Badge>
-            </Label>
+            </div>
           </div>
         </div>
         <Separator />
