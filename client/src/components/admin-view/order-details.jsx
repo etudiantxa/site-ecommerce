@@ -1,7 +1,6 @@
 import { useState } from "react";
 import CommonForm from "../common/form";
-import { DialogContent } from "../ui/dialog";
-import { Label } from "../ui/label";
+import { DialogContent, DialogTitle, DialogDescription, DialogHeader } from "../ui/dialog"; // Added DialogHeader, DialogTitle, DialogDescription
 import { Separator } from "../ui/separator";
 import { Badge } from "../ui/badge";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,22 +10,46 @@ import {
   updateOrderStatus,
 } from "@/store/admin/order-slice";
 import { useToast } from "../ui/use-toast";
+// import { Package, DollarSign, CalendarDays, CreditCard, CheckCircle, XCircle, Truck, UserCircle, Edit3 } from "lucide-react"; // Optional icons
 
 const initialFormData = {
   status: "",
 };
 
+const getStatusBadgeStyle = (status) => {
+  switch (status?.toLowerCase()) {
+    case "confirmed":
+    case "delivered":
+      return "bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-100";
+    case "rejected":
+      return "bg-red-100 text-red-800 dark:bg-red-700 dark:text-red-100";
+    case "pending":
+      return "bg-yellow-100 text-yellow-800 dark:bg-yellow-700 dark:text-yellow-100";
+    case "inprocess": // Assuming "inProcess" might be stored without space
+    case "in process":
+      return "bg-blue-100 text-blue-800 dark:bg-blue-700 dark:text-blue-100";
+    case "inshipping": // Assuming "inShipping" might be stored without space
+    case "in shipping":
+      return "bg-purple-100 text-purple-800 dark:bg-purple-700 dark:text-purple-100";
+    default:
+      return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100";
+  }
+};
+
+
 function AdminOrderDetailsView({ orderDetails }) {
   const [formData, setFormData] = useState(initialFormData);
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth); // Assuming user from auth has userName
   const dispatch = useDispatch();
   const { toast } = useToast();
-
-  console.log(orderDetails, "orderDetailsorderDetails");
 
   function handleUpdateStatus(event) {
     event.preventDefault();
     const { status } = formData;
+    if (!status) {
+        toast({ title: "Veuillez sélectionner un statut.", variant: "destructive" });
+        return;
+    }
 
     dispatch(
       updateOrderStatus({ id: orderDetails?._id, orderStatus: status })
