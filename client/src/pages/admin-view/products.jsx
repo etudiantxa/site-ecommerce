@@ -39,10 +39,13 @@ function AdminProducts() {
   const [uploadedImageUrl, setUploadedImageUrl] = useState("");
   const [imageLoadingState, setImageLoadingState] = useState(false);
   const [currentEditedId, setCurrentEditedId] = useState(null);
+  const [page, setPage] = useState(1);
+  const limit = 4; // ou la valeur que tu veux par page
 
-  const { productList } = useSelector((state) => state.adminProducts);
+  const { productList, pagination } = useSelector((state) => state.adminProducts);
   const dispatch = useDispatch();
   const { toast } = useToast();
+  
 
   function onSubmit(event) {
     event.preventDefault();
@@ -57,7 +60,7 @@ function AdminProducts() {
           console.log(data, "edit");
 
           if (data?.payload?.success) {
-            dispatch(fetchAllProducts());
+            dispatch(fetchAllProducts({ page, limit }));
             setFormData(initialFormData);
             setOpenCreateProductsDialog(false);
             setCurrentEditedId(null);
@@ -76,7 +79,7 @@ function AdminProducts() {
           })
         ).then((data) => {
           if (data?.payload?.success) {
-            dispatch(fetchAllProducts());
+            dispatch(fetchAllProducts({ page, limit }));
             setOpenCreateProductsDialog(false);
             setImageFile(null);
             setFormData(initialFormData);
@@ -92,18 +95,23 @@ function AdminProducts() {
   }
 
   function handleDelete(getCurrentProductId) {
-    dispatch(deleteProduct(getCurrentProductId)).then((data) => {
-      if (data?.payload?.success) {
-        dispatch(fetchAllProducts());
-        toast({
-    title: "Produit supprimé !",
-    description: "Le produit a été retiré du catalogue.",
-    className: "bg-red-50 border-red-400 text-red-900 font-semibold",
-    icon: "🗑️",
-  });
+  dispatch(deleteProduct(getCurrentProductId)).then((data) => {
+    if (data?.payload?.success) {
+      // Vérifie si la page courante devient vide après suppression
+      if (pagination.total > 1 && productList.length === 1 && page > 1) {
+        setPage(page - 1); // On revient à la page précédente
+      } else {
+        dispatch(fetchAllProducts({ page, limit }));
       }
-    });
-  }
+      toast({
+        title: "Produit supprimé !",
+        description: "Le produit a été retiré du catalogue.",
+        className: "bg-red-50 border-red-400 text-red-900 font-semibold",
+        icon: "🗑️",
+      });
+    }
+  });
+}
 
   function isFormValid() {
     return Object.keys(formData)
@@ -113,8 +121,8 @@ function AdminProducts() {
   }
 
   useEffect(() => {
-    dispatch(fetchAllProducts());
-  }, [dispatch]);
+    dispatch(fetchAllProducts({ page, limit }));
+  }, [dispatch, page]);
 
   console.log(formData, "productList");
 
@@ -141,6 +149,35 @@ function AdminProducts() {
             ))
           : null}
       </div>
+      <div className="flex justify-center my-8 gap-2">
+  <Button
+    disabled={page === 1}
+    onClick={() => setPage(page - 1)}
+    className="rounded-full px-4 py-2 bg-blue-100 text-blue-700 font-bold shadow hover:bg-blue-200 transition disabled:opacity-50"
+  >
+    ← Précédent
+  </Button>
+  {[...Array(pagination.totalPages)].map((_, idx) => (
+    <button
+      key={idx + 1}
+      onClick={() => setPage(idx + 1)}
+      className={`mx-1 w-10 h-10 rounded-full font-bold border-2 transition
+        ${page === idx + 1
+          ? "bg-blue-600 text-white border-blue-600 shadow-lg scale-110"
+          : "bg-white text-blue-700 border-blue-200 hover:bg-blue-50"}`}
+      disabled={page === idx + 1}
+    >
+      {idx + 1}
+    </button>
+  ))}
+  <Button
+    disabled={page === pagination.totalPages}
+    onClick={() => setPage(page + 1)}
+    className="rounded-full px-4 py-2 bg-blue-100 text-blue-700 font-bold shadow hover:bg-blue-200 transition disabled:opacity-50"
+  >
+    Suivant →
+  </Button>
+</div>
       <Sheet
         open={openCreateProductsDialog}
         onOpenChange={() => {

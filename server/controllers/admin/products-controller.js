@@ -67,10 +67,31 @@ const addProduct = async (req, res) => {
 
 const fetchAllProducts = async (req, res) => {
   try {
-    const listOfProducts = await Product.find({});
+    // Récupère page et limit depuis la query, avec valeurs par défaut
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 9;
+
+    // Calcule le nombre d'éléments à sauter
+    const skip = (page - 1) * limit;
+
+    // Récupère les produits paginés
+    const listOfProducts = await Product.find({})
+      .sort({ createdAt: -1 }) // Trie d'abord
+      .skip(skip)
+      .limit(limit);
+
+    // Compte le nombre total de produits
+    const totalProducts = await Product.countDocuments();
+
     res.status(200).json({
       success: true,
       data: listOfProducts,
+      pagination: {
+        total: totalProducts,
+        page,
+        limit,
+        totalPages: Math.ceil(totalProducts / limit),
+      },
     });
   } catch (e) {
     console.log(e);
