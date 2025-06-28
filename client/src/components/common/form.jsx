@@ -17,6 +17,7 @@ function CommonForm({
   onSubmit,
   buttonText,
   isBtnDisabled,
+  buttonClassName,
 }) {
   function renderInputsByComponentType(getControlItem) {
     let element = null;
@@ -31,6 +32,7 @@ function CommonForm({
             id={getControlItem.name}
             type={getControlItem.type}
             value={value}
+            className="rounded-xl border-blue-200 focus:border-blue-500 focus:ring-blue-500 bg-white text-blue-900"
             onChange={(event) =>
               setFormData({
                 ...formData,
@@ -39,7 +41,6 @@ function CommonForm({
             }
           />
         );
-
         break;
       case "select":
         element = (
@@ -52,7 +53,7 @@ function CommonForm({
             }
             value={value}
           >
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full rounded-xl border-blue-200 focus:border-blue-500 focus:ring-blue-500 bg-white text-blue-900">
               <SelectValue placeholder={getControlItem.label} />
             </SelectTrigger>
             <SelectContent>
@@ -66,7 +67,6 @@ function CommonForm({
             </SelectContent>
           </Select>
         );
-
         break;
       case "textarea":
         element = (
@@ -75,6 +75,7 @@ function CommonForm({
             placeholder={getControlItem.placeholder}
             id={getControlItem.id}
             value={value}
+            className="rounded-xl border-blue-200 focus:border-blue-500 focus:ring-blue-500 bg-white text-blue-900"
             onChange={(event) =>
               setFormData({
                 ...formData,
@@ -83,9 +84,7 @@ function CommonForm({
             }
           />
         );
-
         break;
-
       default:
         element = (
           <Input
@@ -94,6 +93,7 @@ function CommonForm({
             id={getControlItem.name}
             type={getControlItem.type}
             value={value}
+            className="rounded-xl border-blue-200 focus:border-blue-500 focus:ring-blue-500 bg-white text-blue-900"
             onChange={(event) =>
               setFormData({
                 ...formData,
@@ -109,16 +109,20 @@ function CommonForm({
   }
 
   return (
-    <form onSubmit={onSubmit}>
-      <div className="flex flex-col gap-3">
+    <form onSubmit={onSubmit} className="bg-white rounded-2xl shadow-lg p-6 border border-blue-100">
+      <div className="flex flex-col gap-4">
         {formControls.map((controlItem) => (
           <div className="grid w-full gap-1.5" key={controlItem.name}>
-            <Label className="mb-1">{controlItem.label}</Label>
+            <Label className="mb-1 text-blue-800 font-semibold">{controlItem.label}</Label>
             {renderInputsByComponentType(controlItem)}
           </div>
         ))}
       </div>
-      <Button disabled={isBtnDisabled} type="submit" className="mt-2 w-full">
+      <Button
+        disabled={isBtnDisabled}
+        type="submit"
+        className={`mt-6 w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow transition ${buttonClassName || ""}`}
+      >
         {buttonText || "Submit"}
       </Button>
     </form>

@@ -50,11 +50,13 @@ function AdminOrderDetailsView({ orderDetails }) {
   }
 
   return (
-    <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-auto bg-gradient-to-br from-white via-blue-50 to-blue-100 rounded-2xl shadow-2xl p-8 border-0">
+    <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-auto bg-gradient-to-br from-white via-blue-50 to-blue-100 rounded-2xl shadow-2xl p-8 border-0">
       <div className="grid gap-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-2">
-          <FaBoxOpen className="text-blue-500 text-3xl" />
+          <div className="bg-blue-100 rounded-full p-4 flex items-center justify-center shadow">
+            <FaBoxOpen className="text-blue-500 text-3xl" />
+          </div>
           <div>
             <h2 className="text-2xl font-bold text-blue-700">Order Details</h2>
             <span className="text-sm text-gray-500">
@@ -125,7 +127,7 @@ function AdminOrderDetailsView({ orderDetails }) {
                     key={idx}
                     className="flex items-center justify-between bg-white rounded-lg shadow px-4 py-2 border border-blue-100"
                   >
-                    <span className="font-medium text-blue-900">
+                    <span className="font-medium text-blue-900 flex items-center gap-1">
                       🛒 {item.title}
                     </span>
                     <span className="text-gray-600">Qté: {item.quantity}</span>
@@ -134,45 +136,54 @@ function AdminOrderDetailsView({ orderDetails }) {
                     </span>
                   </li>
                 ))
-              : null}
+              : <span className="text-gray-400">Aucun article</span>}
           </ul>
         </div>
         <Separator />
 
         {/* Shipping Info */}
-        {/* Shipping Info */}
-<div className="bg-white rounded-xl shadow flex flex-col gap-2 p-4 border border-blue-100">
-  <div className="flex items-center gap-2 mb-2">
-    <FaMapMarkerAlt className="text-blue-500 text-xl" />
-    <span className="font-semibold text-blue-700 text-lg">Infos de livraison</span>
-  </div>
-  <div className="flex items-center gap-2 text-gray-700">
-    <FaUser className="text-blue-400" />
-    <span className="font-medium">{user.userName}</span>
-  </div>
-  <div className="flex items-center gap-2 text-gray-700">
-    <FaMapMarkerAlt className="text-green-500" />
-    <span>{orderDetails?.addressInfo?.address}</span>
-  </div>
-  <div className="flex items-center gap-2 text-gray-700">
-    <FaMapMarkerAlt className="text-purple-500" />
-    <span>{orderDetails?.addressInfo?.city}</span>
-  </div>
-  <div className="flex items-center gap-2 text-gray-700">
-    <FaStickyNote className="text-yellow-500" />
-    <span>{orderDetails?.addressInfo?.pincode}</span>
-  </div>
-  <div className="flex items-center gap-2 text-gray-700">
-    <FaPhoneAlt className="text-pink-500" />
-    <span>{orderDetails?.addressInfo?.phone}</span>
-  </div>
-  {orderDetails?.addressInfo?.notes && (
-    <div className="flex items-center gap-2 text-gray-700">
-      <FaStickyNote className="text-orange-400" />
-      <span>{orderDetails?.addressInfo?.notes}</span>
-    </div>
-  )}
-</div>
+        <div className="bg-gradient-to-r from-blue-50 via-white to-blue-100 rounded-2xl shadow-lg flex flex-col gap-3 p-6 border border-blue-200">
+          <div className="flex items-center gap-3 mb-2">
+            <FaMapMarkerAlt className="text-blue-600 text-2xl" />
+            <span className="font-bold text-blue-800 text-lg">
+              Infos de livraison
+            </span>
+          </div>
+          <div className="grid gap-2 text-gray-700 text-base pl-2">
+            <div className="flex items-center gap-2">
+              <FaUser className="text-blue-400" />
+              <span className="font-semibold">Nom :</span>
+              <span>{user.userName}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <FaMapMarkerAlt className="text-green-500" />
+              <span className="font-semibold">Adresse :</span>
+              <span>{orderDetails?.addressInfo?.address}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <FaMapMarkerAlt className="text-purple-500" />
+              <span className="font-semibold">Ville :</span>
+              <span>{orderDetails?.addressInfo?.city}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <FaStickyNote className="text-yellow-500" />
+              <span className="font-semibold">Code postal :</span>
+              <span>{orderDetails?.addressInfo?.pincode}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <FaPhoneAlt className="text-pink-500" />
+              <span className="font-semibold">Téléphone :</span>
+              <span>{orderDetails?.addressInfo?.phone}</span>
+            </div>
+            {orderDetails?.addressInfo?.notes && (
+              <div className="flex items-center gap-2">
+                <FaStickyNote className="text-orange-400" />
+                <span className="font-semibold">Notes :</span>
+                <span>{orderDetails?.addressInfo?.notes}</span>
+              </div>
+            )}
+          </div>
+        </div>
         <Separator />
 
         {/* Update Status Form */}
@@ -194,6 +205,7 @@ function AdminOrderDetailsView({ orderDetails }) {
             ]}
             formData={formData}
             setFormData={setFormData}
+            buttonClassName="bg-blue-600 hover:bg-blue-700 text-white font-bold"
             buttonText={
               <span className="flex items-center gap-2">
                 <FaBoxOpen /> Mettre à jour le statut

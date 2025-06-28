@@ -35,30 +35,29 @@ function AuthRegister() {
     });
   }
 
-  console.log(formData);
-
   return (
-    <div className="mx-auto w-full max-w-md space-y-6">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          Create new account
+    <div className="mx-auto w-full max-w-md space-y-8 bg-white/90 rounded-2xl shadow-xl p-8 border border-blue-100 animate-fade-in">
+      <div className="text-center space-y-2">
+        <h1 className="text-3xl font-extrabold tracking-tight text-blue-900 drop-shadow animate-fade-in-down">
+          Créer un nouveau compte
         </h1>
-        <p className="mt-2">
-          Already have an account
+        <p className="text-blue-700 text-base animate-fade-in-up">
+          Vous avez déjà un compte ?
           <Link
-            className="font-medium ml-2 text-primary hover:underline"
+            className="font-semibold ml-2 text-blue-600 hover:underline"
             to="/auth/login"
           >
-            Login
+            Se connecter
           </Link>
         </p>
       </div>
       <CommonForm
         formControls={registerFormControls}
-        buttonText={"Sign Up"}
+        buttonText={<span className="font-bold">S'inscrire</span>}
         formData={formData}
         setFormData={setFormData}
         onSubmit={onSubmit}
+        buttonClassName="bg-blue-600 hover:bg-blue-700 text-white font-bold"
       />
     </div>
   );

@@ -61,6 +61,12 @@ function AdminProducts() {
             setFormData(initialFormData);
             setOpenCreateProductsDialog(false);
             setCurrentEditedId(null);
+            toast({
+  title: "Produit modifié avec succès !",
+  description: "Les informations du produit ont été mises à jour.",
+  className: "bg-blue-50 border-blue-400 text-blue-900 font-semibold",
+  icon: "✏️",
+});
           }
         })
       : dispatch(
@@ -75,8 +81,12 @@ function AdminProducts() {
             setImageFile(null);
             setFormData(initialFormData);
             toast({
-              title: "Product add successfully",
-            });
+  title: "Produit ajouté avec succès !",
+  description: "Votre produit a bien été enregistré dans le catalogue.",
+  variant: "success", // si ton système de toast gère les variantes
+  className: "bg-green-50 border-green-400 text-green-900 font-semibold",
+  icon: "✅", // si ton composant toast accepte une icône personnalisée
+});
           }
         });
   }
@@ -85,6 +95,12 @@ function AdminProducts() {
     dispatch(deleteProduct(getCurrentProductId)).then((data) => {
       if (data?.payload?.success) {
         dispatch(fetchAllProducts());
+        toast({
+    title: "Produit supprimé !",
+    description: "Le produit a été retiré du catalogue.",
+    className: "bg-red-50 border-red-400 text-red-900 font-semibold",
+    icon: "🗑️",
+  });
       }
     });
   }
@@ -105,7 +121,10 @@ function AdminProducts() {
   return (
     <Fragment>
       <div className="mb-5 w-full flex justify-end">
-        <Button onClick={() => setOpenCreateProductsDialog(true)}>
+        <Button
+        className="bg-blue-600 hover:bg-blue-700 text-white font-bold" 
+        onClick={() => setOpenCreateProductsDialog(true)}
+          >
           Add New Product
         </Button>
       </div>
@@ -132,8 +151,18 @@ function AdminProducts() {
       >
         <SheetContent side="right" className="overflow-auto">
           <SheetHeader>
-            <SheetTitle>
-              {currentEditedId !== null ? "Edit Product" : "Add New Product"}
+            <SheetTitle className="flex items-center gap-2 text-2xl font-extrabold text-blue-800 tracking-tight">
+              {currentEditedId !== null ? (
+                <>
+                  <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-base">Edit</span>
+                  <span>Product</span>
+                </>
+              ) : (
+                <>
+                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-base">Add</span>
+                  <span>New Product</span>
+                </>
+              )}
             </SheetTitle>
           </SheetHeader>
           <ProductImageUpload

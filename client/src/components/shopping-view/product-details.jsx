@@ -81,12 +81,20 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
         reviewValue: rating,
       })
     ).then((data) => {
-      if (data.payload.success) {
+      if (data?.payload?.success) {
         setRating(0);
         setReviewMsg("");
         dispatch(getReviews(productDetails?._id));
         toast({
           title: "Review added successfully!",
+        });
+      } else {
+        toast({
+          title: "Failed to add review",
+          description:
+            data?.payload?.message ||
+            "You may not be authorized or your session has expired.",
+          variant: "destructive",
         });
       }
     });

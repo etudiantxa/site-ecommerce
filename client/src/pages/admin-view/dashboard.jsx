@@ -42,7 +42,10 @@ function AdminDashboard() {
         isCustomStyling={true}
         // isEditMode={currentEditedId !== null}
       />
-      <Button onClick={handleUploadFeatureImage} className="mt-5 w-full">
+      <Button 
+      onClick={handleUploadFeatureImage} 
+      className="mt-5 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold"
+      >
         Upload
       </Button>
       <div className="flex flex-col gap-4 mt-5">

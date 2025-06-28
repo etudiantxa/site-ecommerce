@@ -19,7 +19,7 @@ const initiatePayment = async (req, res) => {
       ref_command: `CMD_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
       command_name: product.description || `Achat ${product.name}`,
       target_payment: product.payment_method || "Orange Money" || "Wave",
-      env: "test", // Forcé en mode test pour le développement
+      env: "prod", // Forcé en mode test pour le développement
       ipn_url: `${baseUrl}/api/paytech/ipn`,
       success_url: `${baseUrl}/payment/success`,
       cancel_url: `${baseUrl}/payment/cancel`,
