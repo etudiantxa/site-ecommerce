@@ -58,7 +58,9 @@ function AdminOrderDetailsView({ orderDetails }) {
             <FaBoxOpen className="text-blue-500 text-3xl" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-blue-700">Order Details</h2>
+            <h2 className="text-2xl font-bold text-blue-700">
+              Détails de la commande
+            </h2>
             <span className="text-sm text-gray-500">
               ID: {orderDetails?._id}
             </span>
@@ -70,24 +72,24 @@ function AdminOrderDetailsView({ orderDetails }) {
         <div className="grid grid-cols-2 gap-6">
           <div className="flex items-center gap-2">
             <FaCalendarAlt className="text-blue-400" />
-            <span className="font-medium">Date:</span>
+            <span className="font-medium">Date :</span>
             <span>{orderDetails?.orderDate.split("T")[0]}</span>
           </div>
           <div className="flex items-center gap-2">
             <FaMoneyBill className="text-green-500" />
-            <span className="font-medium">Total:</span>
+            <span className="font-medium">Total :</span>
             <span className="text-lg font-semibold text-green-700">
               ${orderDetails?.totalAmount}
             </span>
           </div>
           <div className="flex items-center gap-2">
             <FaMoneyBill className="text-purple-500" />
-            <span className="font-medium">Payment:</span>
+            <span className="font-medium">Paiement :</span>
             <span>{orderDetails?.paymentMethod}</span>
           </div>
           <div className="flex items-center gap-2">
             <FaMoneyBill className="text-yellow-500" />
-            <span className="font-medium">Status:</span>
+            <span className="font-medium">Statut :</span>
             <Badge
               className={`rounded-full px-4 py-1 text-white ${
                 orderDetails?.paymentStatus === "Paid"
@@ -99,7 +101,7 @@ function AdminOrderDetailsView({ orderDetails }) {
             </Badge>
           </div>
           <div className="flex items-center gap-2 col-span-2">
-            <span className="font-medium">Order Status:</span>
+            <span className="font-medium">Statut de la commande :</span>
             <Badge
               className={`rounded-full px-4 py-1 text-white ${
                 orderDetails?.orderStatus === "confirmed"
@@ -153,7 +155,7 @@ function AdminOrderDetailsView({ orderDetails }) {
             <div className="flex items-center gap-2">
               <FaUser className="text-blue-400" />
               <span className="font-semibold">Nom :</span>
-              <span>{user.userName}</span>
+              <span>{orderDetails?.addressInfo?.name}</span>
             </div>
             <div className="flex items-center gap-2">
               <FaMapMarkerAlt className="text-green-500" />
@@ -191,15 +193,15 @@ function AdminOrderDetailsView({ orderDetails }) {
           <CommonForm
             formControls={[
               {
-                label: "Order Status",
+                label: "Statut de la commande",
                 name: "status",
                 componentType: "select",
                 options: [
-                  { id: "pending", label: "Pending" },
-                  { id: "inProcess", label: "In Process" },
-                  { id: "inShipping", label: "In Shipping" },
-                  { id: "delivered", label: "Delivered" },
-                  { id: "rejected", label: "Rejected" },
+                  { id: "pending", label: "En attente" },
+                  { id: "inProcess", label: "En cours" },
+                  { id: "inShipping", label: "En livraison" },
+                  { id: "delivered", label: "Livrée" },
+                  { id: "rejected", label: "Rejetée" },
                 ],
               },
             ]}
