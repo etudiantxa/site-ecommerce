@@ -21,7 +21,11 @@ import { Badge } from "../ui/badge";
 
 function AdminOrdersView() {
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
-  const { orderList, orderDetails } = useSelector((state) => state.adminOrder);
+  const [page, setPage] = useState(1);
+  const limit = 8; // ou la valeur que tu veux par page
+  const { orderList, orderDetails, pagination } = useSelector(
+    (state) => state.adminOrder
+  );
   const dispatch = useDispatch();
 
   function handleFetchOrderDetails(getId) {
@@ -29,8 +33,8 @@ function AdminOrdersView() {
   }
 
   useEffect(() => {
-    dispatch(getAllOrdersForAdmin());
-  }, [dispatch]);
+    dispatch(getAllOrdersForAdmin({ page, limit }));
+  }, [dispatch, page]);
 
   console.log(orderDetails, "orderList");
 
@@ -39,43 +43,58 @@ function AdminOrdersView() {
   }, [orderDetails]);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>All Orders</CardTitle>
+    <Card className="shadow-2xl rounded-3xl border-blue-100 bg-white/90">
+      <CardHeader className="bg-gradient-to-r from-blue-700 via-blue-600 to-blue-400 rounded-t-3xl pb-6">
+        <CardTitle className="text-white text-2xl font-extrabold tracking-tight drop-shadow flex items-center gap-2">
+          <span className="bg-blue-300 text-blue-900 px-3 py-1 rounded-full text-base">
+            Admin
+          </span>
+          <span>Commandes</span>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>Order ID</TableHead>
-              <TableHead>Order Date</TableHead>
-              <TableHead>Order Status</TableHead>
-              <TableHead>Order Price</TableHead>
+            <TableRow className="bg-blue-50">
+              <TableHead className="text-blue-900 font-bold">ID</TableHead>
+              <TableHead className="text-blue-900 font-bold">Date</TableHead>
+              <TableHead className="text-blue-900 font-bold">Statut</TableHead>
+              <TableHead className="text-blue-900 font-bold">Total</TableHead>
               <TableHead>
-                <span className="sr-only">Details</span>
+                <span className="sr-only">Détails</span>
               </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {orderList && orderList.length > 0
               ? orderList.map((orderItem) => (
-                  <TableRow>
-                    <TableCell>{orderItem?._id}</TableCell>
-                    <TableCell>{orderItem?.orderDate.split("T")[0]}</TableCell>
+                  <TableRow
+                    key={orderItem._id}
+                    className="hover:bg-blue-50 transition"
+                  >
+                    <TableCell className="font-mono text-xs text-blue-800">
+                      {orderItem?._id}
+                    </TableCell>
+                    <TableCell className="text-blue-700">
+                      {orderItem?.orderDate.split("T")[0]}
+                    </TableCell>
                     <TableCell>
                       <Badge
-                        className={`py-1 px-3 ${
-                          orderItem?.orderStatus === "confirmed"
-                            ? "bg-green-500"
-                            : orderItem?.orderStatus === "rejected"
-                            ? "bg-red-600"
-                            : "bg-black"
-                        }`}
+                        className={`py-1 px-3 text-white font-bold rounded-full shadow
+                      ${
+                        orderItem?.orderStatus === "confirmed"
+                          ? "bg-green-500"
+                          : orderItem?.orderStatus === "rejected"
+                          ? "bg-red-600"
+                          : "bg-gray-800"
+                      }`}
                       >
                         {orderItem?.orderStatus}
                       </Badge>
                     </TableCell>
-                    <TableCell>${orderItem?.totalAmount}</TableCell>
+                    <TableCell className="font-bold text-blue-900">
+                      ${orderItem?.totalAmount}
+                    </TableCell>
                     <TableCell>
                       <Dialog
                         open={openDetailsDialog}
@@ -85,20 +104,54 @@ function AdminOrdersView() {
                         }}
                       >
                         <Button
-                          onClick={() =>
-                            handleFetchOrderDetails(orderItem?._id)
-                          }
+                          className="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full px-4 py-1 shadow"
+                          onClick={() => handleFetchOrderDetails(orderItem?._id)}
                         >
-                          View Details
+                          Voir détails
                         </Button>
                         <AdminOrderDetailsView orderDetails={orderDetails} />
                       </Dialog>
                     </TableCell>
                   </TableRow>
                 ))
-              : null}
+              : (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center text-blue-400 py-8">
+                    Aucune commande trouvée.
+                  </TableCell>
+                </TableRow>
+              )}
           </TableBody>
         </Table>
+        <div className="flex justify-center my-8 gap-2">
+          <Button
+            disabled={page === 1}
+            onClick={() => setPage(page - 1)}
+            className="rounded-full px-4 py-2 bg-blue-100 text-blue-700 font-bold shadow hover:bg-blue-200 transition disabled:opacity-50"
+          >
+            ← Précédent
+          </Button>
+          {[...Array(pagination?.totalPages || 1)].map((_, idx) => (
+            <button
+              key={idx + 1}
+              onClick={() => setPage(idx + 1)}
+              className={`mx-1 w-10 h-10 rounded-full font-bold border-2 transition
+        ${page === idx + 1
+                  ? "bg-blue-600 text-white border-blue-600 shadow-lg scale-110"
+                  : "bg-white text-blue-700 border-blue-200 hover:bg-blue-50"}`}
+              disabled={page === idx + 1}
+            >
+              {idx + 1}
+            </button>
+          ))}
+          <Button
+            disabled={page === (pagination?.totalPages || 1)}
+            onClick={() => setPage(page + 1)}
+            className="rounded-full px-4 py-2 bg-blue-100 text-blue-700 font-bold shadow hover:bg-blue-200 transition disabled:opacity-50"
+          >
+            Suivant →
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
