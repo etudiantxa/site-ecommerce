@@ -137,17 +137,23 @@ function AdminProducts() {
         </Button>
       </div>
       <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
-        {productList && productList.length > 0
-          ? productList.map((productItem) => (
-              <AdminProductTile
-                setFormData={setFormData}
-                setOpenCreateProductsDialog={setOpenCreateProductsDialog}
-                setCurrentEditedId={setCurrentEditedId}
-                product={productItem}
-                handleDelete={handleDelete}
-              />
-            ))
-          : null}
+        {productList && productList.length > 0 ? (
+  productList.map((productItem) => (
+    <AdminProductTile
+      setFormData={setFormData}
+      setOpenCreateProductsDialog={setOpenCreateProductsDialog}
+      setCurrentEditedId={setCurrentEditedId}
+      product={productItem}
+      handleDelete={handleDelete}
+    />
+  ))
+) : (
+  <div className="col-span-full flex flex-col items-center justify-center gap-2 py-16">
+    <span className="text-5xl">📦</span>
+    <span className="text-blue-500 font-bold text-lg">Aucun produit à afficher</span>
+    <span className="text-blue-400 text-sm">Les produits ajoutés apparaîtront ici dès qu'ils seront créés.</span>
+  </div>
+)}
       </div>
       <div className="flex justify-center my-8 gap-2">
   <Button

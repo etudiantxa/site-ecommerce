@@ -155,7 +155,7 @@ function AdminOrderDetailsView({ orderDetails }) {
             <div className="flex items-center gap-2">
               <FaUser className="text-blue-400" />
               <span className="font-semibold">Nom :</span>
-              <span>{orderDetails?.addressInfo?.name}</span>
+              <span>{orderDetails?.user?.userName}</span>
             </div>
             <div className="flex items-center gap-2">
               <FaMapMarkerAlt className="text-green-500" />

@@ -59,7 +59,7 @@ const createOrder = async (req, res) => {
         });
       } else {
         const newlyCreatedOrder = new Order({
-          userId,
+          user: userId,
           cartId,
           cartItems,
           addressInfo,
@@ -151,7 +151,7 @@ const getAllOrdersByUser = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    const orders = await Order.find({ userId });
+    const orders = await Order.find({ user: userId });
 
     if (!orders.length) {
       return res.status(404).json({

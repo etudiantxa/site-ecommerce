@@ -1,7 +1,11 @@
 const mongoose = require("mongoose");
 
 const OrderSchema = new mongoose.Schema({
-  userId: String,
+  user: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "User",
+  required: true,
+},
   cartId: String,
   cartItems: [
     {
@@ -28,6 +32,6 @@ const OrderSchema = new mongoose.Schema({
   orderUpdateDate: Date,
   paymentId: String,
   payerId: String,
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model("Order", OrderSchema);
