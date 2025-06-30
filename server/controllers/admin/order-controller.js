@@ -11,7 +11,8 @@ const getAllOrdersOfAllUsers = async (req, res) => {
     const orders = await Order.find({})
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .populate("user", "userName email");
 
     // Compte le nombre total de commandes
     const totalOrders = await Order.countDocuments();
@@ -46,7 +47,7 @@ const getOrderDetailsForAdmin = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const order = await Order.findById(id);
+    const order = await Order.findById(id).populate("user", "userName email");
 
     if (!order) {
       return res.status(404).json({

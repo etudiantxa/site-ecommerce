@@ -14,15 +14,15 @@ function AdminDashboard() {
   console.log(uploadedImageUrl, "uploadedImageUrl");
 
   function handleUploadFeatureImage() {
-  if (!imageFile) return;
-  dispatch(addFeatureImage(imageFile)).then((data) => {
-    if (data?.payload?.success) {
-      dispatch(getFeatureImages());
-      setImageFile(null);
-      setUploadedImageUrl("");
-    }
-  });
-}
+    if (!imageFile) return;
+    dispatch(addFeatureImage(imageFile)).then((data) => {
+      if (data?.payload?.success) {
+        dispatch(getFeatureImages());
+        setImageFile(null);
+        setUploadedImageUrl("");
+      }
+    });
+  }
 
   useEffect(() => {
     dispatch(getFeatureImages());
@@ -42,23 +42,34 @@ function AdminDashboard() {
         isCustomStyling={true}
         // isEditMode={currentEditedId !== null}
       />
-      <Button 
-      onClick={handleUploadFeatureImage} 
-      className="mt-5 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold"
+      <Button
+        onClick={handleUploadFeatureImage}
+        className="mt-5 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold"
       >
         Upload
       </Button>
       <div className="flex flex-col gap-4 mt-5">
-        {featureImageList && featureImageList.length > 0
-          ? featureImageList.map((featureImgItem) => (
-              <div className="relative">
-                <img
-                  src={featureImgItem.image}
-                  className="w-full h-[300px] object-cover rounded-t-lg"
-                />
-              </div>
-            ))
-          : null}
+        {featureImageList && featureImageList.length > 0 ? (
+          featureImageList.map((featureImgItem) => (
+            <div className="relative" key={featureImgItem._id}>
+              <img
+                src={featureImgItem.image}
+                className="w-full h-[300px] object-cover rounded-t-lg"
+                alt="Image mise en avant"
+              />
+            </div>
+          ))
+        ) : (
+          <div className="flex flex-col items-center justify-center gap-2 py-16">
+            <span className="text-5xl">🖼️</span>
+            <span className="text-blue-500 font-bold text-lg">
+              Aucune image à afficher
+            </span>
+            <span className="text-blue-400 text-sm">
+              Ajoutez une image pour la voir apparaître ici.
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -116,9 +116,13 @@ function AdminOrdersView() {
                 ))
               : (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-blue-400 py-8">
-                    Aucune commande trouvée.
-                  </TableCell>
+                  <TableCell colSpan={5} className="text-center py-10">
+  <div className="flex flex-col items-center justify-center gap-2">
+    <span className="text-5xl">📦</span>
+    <span className="text-blue-500 font-bold text-lg">Aucune commande à afficher</span>
+    <span className="text-blue-400 text-sm">Les commandes clients apparaîtront ici dès qu'elles seront passées.</span>
+  </div>
+</TableCell>
                 </TableRow>
               )}
           </TableBody>
