@@ -20,6 +20,8 @@ import {
   FaPhoneAlt,
   FaStickyNote,
 } from "react-icons/fa";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const initialFormData = {
   status: "",
@@ -47,6 +49,75 @@ function AdminOrderDetailsView({ orderDetails }) {
         });
       }
     });
+  }
+
+  function handleGeneratePDF() {
+    const doc = new jsPDF();
+
+    // Titre principal
+    doc.setFontSize(20);
+    doc.setTextColor(41, 128, 185);
+    doc.text("🛒 Détails de la commande", 14, 18);
+
+    // Infos commande
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`ID: ${orderDetails?._id}`, 14, 28);
+    doc.text(`Date: ${orderDetails?.orderDate?.split("T")[0] || ""}`, 14, 36);
+    doc.text(`Statut commande: ${orderDetails?.orderStatus || ""}`, 14, 44);
+    doc.text(`Statut paiement: ${orderDetails?.paymentStatus || ""}`, 14, 52);
+    doc.text(`Méthode de paiement: ${orderDetails?.paymentMethod || ""}`, 14, 60);
+    doc.text(`Total: $${orderDetails?.totalAmount || ""}`, 14, 68);
+
+    // Séparateur
+    doc.setDrawColor(41, 128, 185);
+    doc.line(14, 72, 196, 72);
+
+    // Infos client & livraison
+    doc.setFontSize(14);
+    doc.setTextColor(41, 128, 185);
+    doc.text("👤 Infos client & livraison", 14, 82);
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    let y = 90;
+    doc.text(`Nom client: ${orderDetails?.user?.userName || ""}`, 14, y);
+    y += 8;
+    doc.text(`Adresse: ${orderDetails?.addressInfo?.address || ""}`, 14, y);
+    y += 8;
+    doc.text(`Ville: ${orderDetails?.addressInfo?.city || ""}`, 14, y);
+    y += 8;
+    doc.text(`Code postal: ${orderDetails?.addressInfo?.pincode || ""}`, 14, y);
+    y += 8;
+    doc.text(`Téléphone: ${orderDetails?.addressInfo?.phone || ""}`, 14, y);
+    y += 8;
+    if (orderDetails?.addressInfo?.notes) {
+      doc.text(`Notes: ${orderDetails?.addressInfo?.notes}`, 14, y);
+      y += 8;
+    }
+
+    // Séparateur
+    doc.setDrawColor(41, 128, 185);
+    doc.line(14, y + 2, 196, y + 2);
+
+    // Articles commandés
+    doc.setFontSize(14);
+    doc.setTextColor(41, 128, 185);
+    doc.text("📦 Articles commandés", 14, y + 12);
+
+    doc.autoTable({
+      startY: y + 16,
+      head: [["Produit", "Qté", "Prix"]],
+      body:
+        orderDetails?.cartItems?.map((item) => [
+          item.title,
+          item.quantity,
+          `$${item.price}`,
+        ]) || [],
+      headStyles: { fillColor: [41, 128, 185] },
+      styles: { fontSize: 12 },
+    });
+
+    doc.save(`commande_${orderDetails?._id}.pdf`);
   }
 
   return (
@@ -215,6 +286,14 @@ function AdminOrderDetailsView({ orderDetails }) {
             }
             onSubmit={handleUpdateStatus}
           />
+        </div>
+        <div className="mt-4">
+          <button
+            onClick={handleGeneratePDF}
+            className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow"
+          >
+            <FaBoxOpen /> Télécharger le PDF
+          </button>
         </div>
       </div>
     </DialogContent>
