@@ -27,19 +27,16 @@ function createSearchParamsHelper(filterParams) {
   for (const [key, value] of Object.entries(filterParams)) {
     if (Array.isArray(value) && value.length > 0) {
       const paramValue = value.join(",");
-
       queryParams.push(`${key}=${encodeURIComponent(paramValue)}`);
     }
   }
-
-  console.log(queryParams, "queryParams");
 
   return queryParams.join("&");
 }
 
 function ShoppingListing() {
   const dispatch = useDispatch();
-  const { productList, productDetails } = useSelector(
+  const { productList, productDetails, pagination } = useSelector(
     (state) => state.shopProducts
   );
   const { cartItems } = useSelector((state) => state.shopCart);
@@ -49,6 +46,8 @@ function ShoppingListing() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const { toast } = useToast();
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 4; // adapte selon ton besoin
 
   const categorySearchParam = searchParams.get("category");
 
@@ -76,15 +75,14 @@ function ShoppingListing() {
 
     setFilters(cpyFilters);
     sessionStorage.setItem("filters", JSON.stringify(cpyFilters));
+    setCurrentPage(1); // reset page on filter change
   }
 
   function handleGetProductDetails(getCurrentProductId) {
-    console.log(getCurrentProductId);
     dispatch(fetchProductDetails(getCurrentProductId));
   }
 
   function handleAddtoCart(getCurrentProductId, getTotalStock) {
-    console.log(cartItems);
     let getCartItems = cartItems.items || [];
 
     if (getCartItems.length) {
@@ -98,7 +96,6 @@ function ShoppingListing() {
             title: `Only ${getQuantity} quantity can be added for this item`,
             variant: "destructive",
           });
-
           return;
         }
       }
@@ -135,15 +132,18 @@ function ShoppingListing() {
   useEffect(() => {
     if (filters !== null && sort !== null)
       dispatch(
-        fetchAllFilteredProducts({ filterParams: filters, sortParams: sort })
+        fetchAllFilteredProducts({
+          filterParams: filters,
+          sortParams: sort,
+          page: currentPage,
+          limit: productsPerPage,
+        })
       );
-  }, [dispatch, sort, filters]);
+  }, [dispatch, sort, filters, currentPage]);
 
   useEffect(() => {
     if (productDetails !== null) setOpenDetailsDialog(true);
   }, [productDetails]);
-
-  console.log(productList, "productListproductListproductList");
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 p-4 md:p-6">
@@ -153,7 +153,7 @@ function ShoppingListing() {
           <h2 className="text-lg font-extrabold">All Products</h2>
           <div className="flex items-center gap-3">
             <span className="text-muted-foreground">
-              {productList?.length} Products
+              {pagination?.total || 0} Products
             </span>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -181,16 +181,47 @@ function ShoppingListing() {
             </DropdownMenu>
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 ">
           {productList && productList.length > 0
             ? productList.map((productItem) => (
                 <ShoppingProductTile
+                  key={productItem._id}
                   handleGetProductDetails={handleGetProductDetails}
                   product={productItem}
                   handleAddtoCart={handleAddtoCart}
                 />
               ))
-            : null}
+            : <div className="col-span-full flex flex-col items-center justify-center py-16 text-blue-400">
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2a4 4 0 018 0v2M9 17H7a2 2 0 01-2-2v-5a2 2 0 012-2h10a2 2 0 012 2v5a2 2 0 01-2 2h-2M9 17v2a2 2 0 002 2h2a2 2 0 002-2v-2" />
+  </svg>
+  <span className="text-lg font-semibold">Aucun produit trouvé</span>
+  <span className="text-sm text-gray-400 mt-1">Essayez d’ajuster vos filtres ou votre recherche.</span>
+</div>}
+        </div>
+        {/* Pagination */}
+        <div className="flex justify-center items-center mt-8 gap-2">
+          <Button
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((p) => p - 1)}
+            className="rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2 shadow disabled:opacity-50 disabled:cursor-not-allowed"
+            size="sm"
+            variant="default"
+          >
+            Précédent
+          </Button>
+          <span className="mx-2 px-4 py-2 rounded-full bg-blue-100 text-blue-700 font-semibold text-base shadow">
+            Page {currentPage} / {pagination?.totalPages || 1}
+          </span>
+          <Button
+            disabled={currentPage === (pagination?.totalPages || 1)}
+            onClick={() => setCurrentPage((p) => p + 1)}
+            className="rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2 shadow disabled:opacity-50 disabled:cursor-not-allowed"
+            size="sm"
+            variant="default"
+          >
+            Suivant
+          </Button>
         </div>
       </div>
       <ProductDetailsDialog
