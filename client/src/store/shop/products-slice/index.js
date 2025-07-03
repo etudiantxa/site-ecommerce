@@ -5,23 +5,22 @@ const initialState = {
   isLoading: false,
   productList: [],
   productDetails: null,
+  pagination: null,
 };
 
 export const fetchAllFilteredProducts = createAsyncThunk(
   "/products/fetchAllProducts",
-  async ({ filterParams, sortParams }) => {
-    console.log(fetchAllFilteredProducts, "fetchAllFilteredProducts");
-
+  async ({ filterParams, sortParams, page = 1, limit = 12 }) => {
     const query = new URLSearchParams({
       ...filterParams,
       sortBy: sortParams,
+      page,
+      limit,
     });
 
     const result = await axios.get(
       `http://localhost:5000/api/shop/products/get?${query}`
     );
-
-    console.log(result);
 
     return result?.data;
   }
@@ -54,6 +53,7 @@ const shoppingProductSlice = createSlice({
       .addCase(fetchAllFilteredProducts.fulfilled, (state, action) => {
         state.isLoading = false;
         state.productList = action.payload.data;
+        state.pagination = action.payload.pagination;
       })
       .addCase(fetchAllFilteredProducts.rejected, (state, action) => {
         state.isLoading = false;

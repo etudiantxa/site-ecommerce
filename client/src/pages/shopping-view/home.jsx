@@ -47,15 +47,17 @@ const brandsWithIcon = [
   { id: "zara", label: "Zara", icon: Images },
   { id: "h&m", label: "H&M", icon: Heater },
 ];
+
 function ShoppingHome() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const { productList, productDetails } = useSelector(
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 4;
+
+  const { productList, productDetails, pagination } = useSelector(
     (state) => state.shopProducts
   );
   const { featureImageList } = useSelector((state) => state.commonFeature);
-
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
-
   const { user } = useSelector((state) => state.auth);
 
   const dispatch = useDispatch();
@@ -67,7 +69,6 @@ function ShoppingHome() {
     const currentFilter = {
       [section]: [getCurrentItem.id],
     };
-
     sessionStorage.setItem("filters", JSON.stringify(currentFilter));
     navigate(`/shop/listing`);
   }
@@ -105,16 +106,17 @@ function ShoppingHome() {
     return () => clearInterval(timer);
   }, [featureImageList]);
 
+  // Pagination backend : on change de page, on recharge les produits
   useEffect(() => {
     dispatch(
       fetchAllFilteredProducts({
         filterParams: {},
         sortParams: "price-lowtohigh",
+        page: currentPage,
+        limit: productsPerPage,
       })
     );
-  }, [dispatch]);
-
-  console.log(productList, "productList");
+  }, [dispatch, currentPage]);
 
   useEffect(() => {
     dispatch(getFeatureImages());
@@ -131,6 +133,7 @@ function ShoppingHome() {
                 className={`${
                   index === currentSlide ? "opacity-100" : "opacity-0"
                 } absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000`}
+                alt=""
               />
             ))
           : null}
@@ -161,63 +164,100 @@ function ShoppingHome() {
           <ChevronRightIcon className="w-4 h-4" />
         </Button>
       </div>
-      <section className="py-12 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">
-            Shop by category
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {categoriesWithIcon.map((categoryItem) => (
-              <Card
-                onClick={() =>
-                  handleNavigateToListingPage(categoryItem, "category")
-                }
-                className="cursor-pointer hover:shadow-lg transition-shadow"
-              >
-                <CardContent className="flex flex-col items-center justify-center p-6">
-                  <categoryItem.icon className="w-12 h-12 mb-4 text-primary" />
-                  <span className="font-bold">{categoryItem.label}</span>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+      <section className="py-16 bg-gradient-to-br from-blue-50 via-white to-blue-100">
+  <div className="container mx-auto px-4">
+    <h2 className="text-4xl font-extrabold text-center mb-10 text-blue-700 tracking-tight drop-shadow">
+      🛍️ Catégories populaires
+    </h2>
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+      {categoriesWithIcon.map((categoryItem) => (
+        <Card
+          key={categoryItem.id}
+          onClick={() =>
+            handleNavigateToListingPage(categoryItem, "category")
+          }
+          className="cursor-pointer group bg-white border-2 border-blue-100 hover:border-blue-400 hover:shadow-xl transition-all duration-200 rounded-xl hover:animate-bounce"
+        >
+          <CardContent className="flex flex-col items-center justify-center p-8">
+            <span className="flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 group-hover:bg-blue-600 transition-colors mb-4 shadow">
+              <categoryItem.icon className="w-8 h-8 text-blue-600 group-hover:text-white transition-colors" />
+            </span>
+            <span className="font-bold text-blue-700 text-lg group-hover:text-blue-900 transition-colors">
+              {categoryItem.label}
+            </span>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  </div>
+</section>
 
-      <section className="py-12 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">Shop by Brand</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {brandsWithIcon.map((brandItem) => (
-              <Card
-                onClick={() => handleNavigateToListingPage(brandItem, "brand")}
-                className="cursor-pointer hover:shadow-lg transition-shadow"
-              >
-                <CardContent className="flex flex-col items-center justify-center p-6">
-                  <brandItem.icon className="w-12 h-12 mb-4 text-primary" />
-                  <span className="font-bold">{brandItem.label}</span>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+      <section className="py-16 bg-gradient-to-br from-blue-100 via-white to-blue-50">
+  <div className="container mx-auto px-4">
+    <h2 className="text-4xl font-extrabold text-center mb-10 text-blue-700 tracking-tight drop-shadow">
+      🏷️ Marques populaires
+    </h2>
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
+      {brandsWithIcon.map((brandItem) => (
+        <Card
+          key={brandItem.id}
+          onClick={() => handleNavigateToListingPage(brandItem, "brand")}
+          className="cursor-pointer group bg-white border-2 border-blue-100 hover:border-blue-400 hover:shadow-xl transition-all duration-200 rounded-xl hover:animate-bounce"
+        >
+          <CardContent className="flex flex-col items-center justify-center p-8">
+            <span className="flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 group-hover:bg-blue-600 transition-colors mb-4 shadow">
+              <brandItem.icon className="w-8 h-8 text-blue-600 group-hover:text-white transition-colors" />
+            </span>
+            <span className="font-bold text-blue-700 text-lg group-hover:text-blue-900 transition-colors">
+              {brandItem.label}
+            </span>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  </div>
+</section>
 
       <section className="py-12">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">
+          <h2 className="text-4xl font-extrabold text-center mb-10 text-blue-700 tracking-tight drop-shadow">
             Feature Products
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {productList && productList.length > 0
               ? productList.map((productItem) => (
                   <ShoppingProductTile
+                    key={productItem._id}
                     handleGetProductDetails={handleGetProductDetails}
                     product={productItem}
                     handleAddtoCart={handleAddtoCart}
                   />
                 ))
-              : null}
+              : <div className="col-span-full text-center text-gray-400">Aucun produit trouvé.</div>}
+          </div>
+          {/* Pagination */}
+          <div className="flex justify-center items-center mt-8 gap-2">
+            <Button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((p) => p - 1)}
+              className="rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2 shadow disabled:opacity-50 disabled:cursor-not-allowed"
+              size="sm"
+              variant="default"
+            >
+              Précédent
+            </Button>
+            <span className="mx-2 px-4 py-2 rounded-full bg-blue-100 text-blue-700 font-semibold text-base shadow">
+              Page {currentPage} / {pagination?.totalPages || 1}
+            </span>
+            <Button
+              disabled={currentPage === (pagination?.totalPages || 1)}
+              onClick={() => setCurrentPage((p) => p + 1)}
+              className="rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2 shadow disabled:opacity-50 disabled:cursor-not-allowed"
+              size="sm"
+              variant="default"
+            >
+              Suivant
+            </Button>
           </div>
         </div>
       </section>
